@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { pool, testConnection } from "@/lib/db"
+import { query, testConnection } from "@/lib/db"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     console.log("Querying database for user with email:", email)
     let users: User[] = []
     try {
-      const [result] = await pool.query("SELECT * FROM users WHERE email = ?", [email])
+      const result = await query("SELECT * FROM users WHERE email = ?", [email])
       users = result as User[]
       console.log("Database query result:", users ? `Found ${users.length} users` : "No result")
     } catch (dbError) {
@@ -176,4 +176,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

@@ -45,6 +45,7 @@
         "vaul": "^1.1.2"
     },
     "devDependencies": {
+        "@netlify/plugin-nextjs": "^5.10.2",
         "@types/bcrypt": "^5.0.2",
         "@types/jsonwebtoken": "^9.0.9",
         "@types/node": "^20.5.9",
