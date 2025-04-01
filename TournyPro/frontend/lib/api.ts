@@ -44,6 +44,7 @@ async function authFetch(url: string, options: RequestInit = {}) {
 export const authAPI = {
   register: async (name: string, email: string, password: string) => {
     try {
+      console.log("Sending registration request for:", email)
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -52,12 +53,14 @@ export const authAPI = {
         body: JSON.stringify({ name, email, password }),
       })
 
+      const data = await response.json()
+      console.log("Registration response:", { success: data.success, message: data.message })
+
       if (!response.ok) {
-        const data = await response.json().catch(() => ({ message: "An unknown error occurred" }))
-        throw new Error(data.message || "Registration failed")
+        throw new Error(data.message || `Registration failed with status ${response.status}`)
       }
 
-      return response.json()
+      return data
     } catch (error) {
       console.error("Registration error:", error)
       throw error

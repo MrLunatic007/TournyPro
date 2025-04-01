@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Trophy, Home, Calendar, Award, Archive, LogOut, Menu, X } from "lucide-react"
+import { Trophy, Home, Calendar, Award, Archive, LogOut, Menu, X, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useToast } from "@/components/ui/use-toast"
@@ -79,6 +79,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: "Tournaments", href: "/tournaments", icon: Calendar },
     { name: "Leaderboard", href: "/leaderboard", icon: Award },
     { name: "Archive", href: "/archive", icon: Archive },
+    { name: "Profile", href: "/profile", icon: User },
   ]
 
   if (isLoading) {

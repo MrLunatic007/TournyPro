@@ -13,6 +13,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast"
 import { authAPI } from "@/lib/api"
 
+// Add imports for Alert components
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle, Database } from "lucide-react"
+
 export default function RegisterPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -22,6 +26,10 @@ export default function RegisterPage() {
   const router = useRouter()
   const { toast } = useToast()
 
+  // Add state for database error
+  const [dbError, setDbError] = useState(false)
+
+  // Update the handleSubmit function to detect database errors
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -35,20 +43,37 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true)
+    setDbError(false)
 
     try {
-      await authAPI.register(name, email, password)
+      console.log("Attempting to register user:", { name, email })
+      const response = await authAPI.register(name, email, password)
+
+      if (!response.success) {
+        throw new Error(response.message || "Registration failed")
+      }
 
       toast({
         title: "Registration successful",
         description: "Your account has been created. Please log in.",
       })
 
-      router.push("/login")
+      // Add a small delay before redirecting to ensure the toast is seen
+      setTimeout(() => {
+        router.push("/login")
+      }, 1500)
     } catch (error) {
+      console.error("Registration error:", error)
+
+      // Check if it's likely a database error
+      const errorMessage = error instanceof Error ? error.message : "There was a problem creating your account."
+      if (errorMessage.includes("Database") || errorMessage.includes("SQL") || errorMessage.includes("connection")) {
+        setDbError(true)
+      }
+
       toast({
         title: "Registration failed",
-        description: error instanceof Error ? error.message : "There was a problem creating your account.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -104,6 +129,19 @@ export default function RegisterPage() {
                 required
               />
             </div>
+            {dbError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Database Connection Issue</AlertTitle>
+                <AlertDescription>
+                  <p className="mb-2">There seems to be a problem connecting to the database.</p>
+                  <Link href="/setup" className="text-primary hover:underline flex items-center gap-1">
+                    <Database className="h-3 w-3" />
+                    Go to Setup Page
+                  </Link>
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
